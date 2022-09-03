@@ -1,6 +1,7 @@
 package br.com.uni.funcionarios.domain.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.uni.funcionarios.domain.exception.FuncionarioNaoEncontradoException;
+import br.com.uni.funcionarios.domain.exception.NegocioException;
 import br.com.uni.funcionarios.domain.model.Funcionario;
 import br.com.uni.funcionarios.domain.repository.FuncionarioRepository;
 
@@ -23,6 +25,7 @@ public class FuncionarioService {
 
 	@Transactional
 	public Funcionario salvar(Funcionario funcionario) {
+		validarCpf(funcionario);
 		return funcionarioRepository.save(funcionario);
 	}
 
@@ -40,6 +43,16 @@ public class FuncionarioService {
 
 		} catch (EmptyResultDataAccessException e) {
 			throw new FuncionarioNaoEncontradoException(funcionarioId);
+		}
+	}
+	
+	private void validarCpf(Funcionario funcionario) {
+
+		Optional<Funcionario> funcionarioExistente = funcionarioRepository.findByCpf(funcionario.getCpf());
+
+		if (funcionarioExistente.isPresent() && !funcionarioExistente.get().equals(funcionario)) {
+			throw new NegocioException(
+					String.format("Já existe um funcionário cadastrado com o CPF: %s", funcionario.getCpf()));
 		}
 	}
 
