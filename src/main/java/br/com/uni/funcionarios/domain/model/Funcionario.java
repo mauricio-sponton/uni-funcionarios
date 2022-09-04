@@ -20,22 +20,36 @@ public class Funcionario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	private String nome;
-	
+
 	@CPF
 	@Column(unique = true)
 	private String cpf;
-	
+
 	@Column(columnDefinition = "date")
 	private LocalDate dataNascimento;
-	
+
 	private String telefone;
-	
+
 	@Embedded
 	private Endereco endereco;
-	
+
 	private BigDecimal salario;
+
+	public Funcionario() {
+	}
+
+	public Funcionario(Long id, String nome, @CPF String cpf, LocalDate dataNascimento, String telefone,
+			Endereco endereco, BigDecimal salario) {
+		this.id = id;
+		this.nome = nome;
+		this.cpf = cpf;
+		this.dataNascimento = dataNascimento;
+		this.telefone = telefone;
+		this.endereco = endereco;
+		this.salario = salario;
+	}
 
 	public Long getId() {
 		return id;
@@ -92,70 +106,65 @@ public class Funcionario {
 	public void setSalario(BigDecimal salario) {
 		this.salario = salario;
 	}
-	
+
 	public BigDecimal calcularReajuste(Double valorReajuste) {
 		return salario.multiply(new BigDecimal(valorReajuste)).setScale(2, RoundingMode.HALF_EVEN);
 	}
-	
+
 	public BigDecimal calcularNovoSalario(BigDecimal reajuste) {
 		return salario.add(reajuste);
 	}
-	
+
 	public String calcularPercentual(Double percentual) {
 		percentual = (percentual * 100);
 		return String.format("%.0f", percentual).concat("%");
 	}
-	
+
 	public Double definirValorPercentual() {
-		
+
 		Double valor = null;
-		if(salario.compareTo(BigDecimal.valueOf(0)) > 0 && salario.compareTo(BigDecimal.valueOf(400)) <= 0) {
+		if (salario.compareTo(BigDecimal.valueOf(0)) > 0 && salario.compareTo(BigDecimal.valueOf(400)) <= 0) {
 			valor = 0.15;
-		}
-		else if(salario.compareTo(BigDecimal.valueOf(400)) > 0 && salario.compareTo(BigDecimal.valueOf(800)) <= 0) {
+		} else if (salario.compareTo(BigDecimal.valueOf(400)) > 0 && salario.compareTo(BigDecimal.valueOf(800)) <= 0) {
 			valor = 0.12;
-		}
-		else if(salario.compareTo(BigDecimal.valueOf(800)) > 0 && salario.compareTo(BigDecimal.valueOf(1200)) <= 0) {
+		} else if (salario.compareTo(BigDecimal.valueOf(800)) > 0 && salario.compareTo(BigDecimal.valueOf(1200)) <= 0) {
 			valor = 0.10;
-		}
-		else if(salario.compareTo(BigDecimal.valueOf(1200)) > 0 && salario.compareTo(BigDecimal.valueOf(2000)) <= 0) {
+		} else if (salario.compareTo(BigDecimal.valueOf(1200)) > 0
+				&& salario.compareTo(BigDecimal.valueOf(2000)) <= 0) {
 			valor = 0.07;
-		}
-		else {
+		} else {
 			valor = 0.04;
 		}
-		
+
 		return valor;
 	}
-	
+
 	public String calcularImposto() {
-		
+
 		BigDecimal imposto = BigDecimal.ZERO;
 		BigDecimal resto = BigDecimal.ZERO;
-		
-		if(salario.compareTo(BigDecimal.valueOf(4500)) > 0) {
+
+		if (salario.compareTo(BigDecimal.valueOf(4500)) > 0) {
 			imposto = new BigDecimal((1000 * 0.08) + (1500 * 0.18));
 			resto = salario.subtract(BigDecimal.valueOf(4500));
 			imposto = imposto.add(resto.multiply(BigDecimal.valueOf(0.28)));
-		}
-		else if(salario.compareTo(BigDecimal.valueOf(3000)) > 0) {
+		} else if (salario.compareTo(BigDecimal.valueOf(3000)) > 0) {
 			imposto = new BigDecimal(1000 * 0.08);
 			resto = salario.subtract(BigDecimal.valueOf(3000));
 			imposto = imposto.add(resto.multiply(BigDecimal.valueOf(0.18)));
 		}
-		
-		else if(salario.compareTo(BigDecimal.valueOf(2000)) > 0) {
+
+		else if (salario.compareTo(BigDecimal.valueOf(2000)) > 0) {
 			resto = salario.subtract(BigDecimal.valueOf(2000));
 			imposto = imposto.add(resto.multiply(BigDecimal.valueOf(0.08)));
 		}
-		
-		
-		if(imposto.compareTo(BigDecimal.valueOf(0)) > 0) {
+
+		if (imposto.compareTo(BigDecimal.valueOf(0)) > 0) {
 			return "R$ " + imposto.setScale(2, RoundingMode.HALF_EVEN);
-		}else {
+		} else {
 			return "Isento";
 		}
-		
+
 	}
 
 	@Override
@@ -174,6 +183,5 @@ public class Funcionario {
 		Funcionario other = (Funcionario) obj;
 		return Objects.equals(id, other.id);
 	}
-	
-	
+
 }
