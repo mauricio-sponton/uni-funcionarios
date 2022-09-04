@@ -127,6 +127,36 @@ public class Funcionario {
 		
 		return valor;
 	}
+	
+	public String calcularImposto() {
+		
+		BigDecimal imposto = BigDecimal.ZERO;
+		BigDecimal resto = BigDecimal.ZERO;
+		
+		if(salario.compareTo(BigDecimal.valueOf(4500)) > 0) {
+			imposto = new BigDecimal((1000 * 0.08) + (1500 * 0.18));
+			resto = salario.subtract(BigDecimal.valueOf(4500));
+			imposto = imposto.add(resto.multiply(BigDecimal.valueOf(0.28)));
+		}
+		else if(salario.compareTo(BigDecimal.valueOf(3000)) > 0) {
+			imposto = new BigDecimal(1000 * 0.08);
+			resto = salario.subtract(BigDecimal.valueOf(3000));
+			imposto = imposto.add(resto.multiply(BigDecimal.valueOf(0.18)));
+		}
+		
+		else if(salario.compareTo(BigDecimal.valueOf(2000)) > 0) {
+			resto = salario.subtract(BigDecimal.valueOf(2000));
+			imposto = imposto.add(resto.multiply(BigDecimal.valueOf(0.08)));
+		}
+		
+		
+		if(imposto.compareTo(BigDecimal.valueOf(0)) > 0) {
+			return "R$ " + imposto.setScale(2, RoundingMode.HALF_EVEN);
+		}else {
+			return "Isento";
+		}
+		
+	}
 
 	@Override
 	public int hashCode() {

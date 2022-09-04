@@ -52,6 +52,14 @@ public class DBService {
 		f3.setEndereco(endereco);
 		f3.setCpf("379.388.824-02");
 		
-		funcionarioRepository.saveAll(Arrays.asList(f1, f2, f3));
+		Funcionario f4 = new Funcionario();
+		f4.setNome("Jordana Vieira");
+		f4.setDataNascimento(LocalDate.now());
+		f4.setSalario(new BigDecimal(3002));
+		f4.setTelefone("13 991655284");
+		f4.setEndereco(endereco);
+		f4.setCpf("395.685.537-03");
+		
+		funcionarioRepository.saveAll(Arrays.asList(f1, f2, f3, f4));
 	}
 }

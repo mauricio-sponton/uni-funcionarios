@@ -8,9 +8,11 @@ import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.uni.funcionarios.api.dto.output.ImpostoDTO;
 import br.com.uni.funcionarios.api.dto.output.NovoSalarioDTO;
 import br.com.uni.funcionarios.domain.exception.FuncionarioNaoEncontradoException;
 import br.com.uni.funcionarios.domain.exception.NegocioException;
@@ -24,7 +26,7 @@ public class FuncionarioService {
 	private FuncionarioRepository funcionarioRepository;
 
 	public List<Funcionario> listar() {
-		return funcionarioRepository.findAll();
+		return funcionarioRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
 	}
 
 	@Transactional
@@ -81,6 +83,23 @@ public class FuncionarioService {
 		
 		funcionario.get().setSalario(salario);
 
+		return dto;
+	}
+	
+	public ImpostoDTO calcularImposto(String funcionarioCpf) {
+		Optional<Funcionario> funcionario = funcionarioRepository.findByCpf(funcionarioCpf);
+
+		if (!funcionario.isPresent()) {
+			throw new NegocioException(
+					String.format("Não existe um funcionário cadastrado com o CPF: %s", funcionarioCpf));
+		}
+		
+		String impostoCalculado = funcionario.get().calcularImposto();
+		
+		ImpostoDTO dto = new ImpostoDTO();
+		dto.setCpf(funcionario.get().getCpf());
+		dto.setImposto(impostoCalculado);
+		
 		return dto;
 	}
 

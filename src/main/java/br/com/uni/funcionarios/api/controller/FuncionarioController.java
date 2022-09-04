@@ -21,6 +21,7 @@ import br.com.uni.funcionarios.api.disassembler.FuncionarioInputDTODisassembler;
 import br.com.uni.funcionarios.api.dto.input.FuncionarioInputDTO;
 import br.com.uni.funcionarios.api.dto.output.FuncionarioDTO;
 import br.com.uni.funcionarios.api.dto.output.FuncionarioResumoDTO;
+import br.com.uni.funcionarios.api.dto.output.ImpostoDTO;
 import br.com.uni.funcionarios.api.dto.output.NovoSalarioDTO;
 import br.com.uni.funcionarios.domain.model.Funcionario;
 import br.com.uni.funcionarios.domain.service.FuncionarioService;
@@ -81,5 +82,10 @@ public class FuncionarioController {
 	@PutMapping("/novo-salario/{funcionarioCpf}")
 	public NovoSalarioDTO novoSalario(@PathVariable String funcionarioCpf) {
 		return funcionarioService.calcularNovoSalario(funcionarioCpf);
+	}
+	
+	@GetMapping("/imposto/{funcionarioCpf}")
+	public ImpostoDTO imposto(@PathVariable String funcionarioCpf) {
+		return funcionarioService.calcularImposto(funcionarioCpf);
 	}
 }
