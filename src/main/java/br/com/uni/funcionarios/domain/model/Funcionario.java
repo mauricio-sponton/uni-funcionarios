@@ -23,7 +23,7 @@ public class Funcionario {
 
 	private String nome;
 
-	@CPF
+	
 	@Column(unique = true)
 	private String cpf;
 

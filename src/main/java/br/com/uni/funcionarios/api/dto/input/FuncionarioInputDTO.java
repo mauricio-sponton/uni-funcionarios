@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.PositiveOrZero;
 
+import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +18,7 @@ public class FuncionarioInputDTO {
 	@NotBlank
 	private String nome;
 
+	@CPF
 	@NotBlank
 	private String cpf;
 
