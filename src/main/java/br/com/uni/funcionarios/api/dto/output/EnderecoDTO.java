@@ -1,6 +1,6 @@
-package br.com.uni.funcionarios.api.model.output;
+package br.com.uni.funcionarios.api.dto.output;
 
-public class EnderecoModel {
+public class EnderecoDTO {
 
 	private String cep;
 	private String logradouro;

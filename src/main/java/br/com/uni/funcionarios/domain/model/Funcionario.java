@@ -1,6 +1,7 @@
 package br.com.uni.funcionarios.domain.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -90,6 +91,41 @@ public class Funcionario {
 
 	public void setSalario(BigDecimal salario) {
 		this.salario = salario;
+	}
+	
+	public BigDecimal calcularReajuste(Double valorReajuste) {
+		return salario.multiply(new BigDecimal(valorReajuste)).setScale(2, RoundingMode.HALF_EVEN);
+	}
+	
+	public BigDecimal calcularNovoSalario(BigDecimal reajuste) {
+		return salario.add(reajuste);
+	}
+	
+	public String calcularPercentual(Double percentual) {
+		percentual = (percentual * 100);
+		return String.format("%.0f", percentual).concat("%");
+	}
+	
+	public Double definirValorPercentual() {
+		
+		Double valor = null;
+		if(salario.compareTo(BigDecimal.valueOf(0)) > 0 && salario.compareTo(BigDecimal.valueOf(400)) <= 0) {
+			valor = 0.15;
+		}
+		else if(salario.compareTo(BigDecimal.valueOf(400)) > 0 && salario.compareTo(BigDecimal.valueOf(800)) <= 0) {
+			valor = 0.12;
+		}
+		else if(salario.compareTo(BigDecimal.valueOf(800)) > 0 && salario.compareTo(BigDecimal.valueOf(1200)) <= 0) {
+			valor = 0.10;
+		}
+		else if(salario.compareTo(BigDecimal.valueOf(1200)) > 0 && salario.compareTo(BigDecimal.valueOf(2000)) <= 0) {
+			valor = 0.07;
+		}
+		else {
+			valor = 0.04;
+		}
+		
+		return valor;
 	}
 
 	@Override

@@ -1,9 +1,9 @@
-package br.com.uni.funcionarios.api.model.output;
+package br.com.uni.funcionarios.api.dto.output;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class FuncionarioResumoModel {
+public class FuncionarioResumoDTO {
 
 	private Long id;
 	private String nome;

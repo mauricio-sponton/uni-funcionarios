@@ -1,4 +1,4 @@
-package br.com.uni.funcionarios.api.model.input;
+package br.com.uni.funcionarios.api.dto.input;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ import javax.validation.constraints.PositiveOrZero;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FuncionarioInput {
+public class FuncionarioInputDTO {
 
 	@NotBlank
 	private String nome;
@@ -31,7 +31,7 @@ public class FuncionarioInput {
 
 	@Valid
 	@NotNull
-	private EnderecoInput endereco;
+	private EnderecoInputDTO endereco;
 
 	public String getNome() {
 		return nome;
@@ -73,11 +73,11 @@ public class FuncionarioInput {
 		this.salario = salario;
 	}
 
-	public EnderecoInput getEndereco() {
+	public EnderecoInputDTO getEndereco() {
 		return endereco;
 	}
 
-	public void setEndereco(EnderecoInput endereco) {
+	public void setEndereco(EnderecoInputDTO endereco) {
 		this.endereco = endereco;
 	}
 

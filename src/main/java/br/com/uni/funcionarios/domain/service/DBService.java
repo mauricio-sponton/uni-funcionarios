@@ -39,11 +39,19 @@ public class DBService {
 		Funcionario f2 = new Funcionario();
 		f2.setNome("Maria Sé");
 		f2.setDataNascimento(LocalDate.now());
-		f2.setSalario(new BigDecimal(600));
+		f2.setSalario(new BigDecimal(800.01));
 		f2.setTelefone("13 991655284");
 		f2.setEndereco(endereco);
 		f2.setCpf("402.456.858-20");
 		
-		funcionarioRepository.saveAll(Arrays.asList(f1, f2));
+		Funcionario f3 = new Funcionario();
+		f3.setNome("Jordana Vieira");
+		f3.setDataNascimento(LocalDate.now());
+		f3.setSalario(new BigDecimal(2000));
+		f3.setTelefone("13 991655284");
+		f3.setEndereco(endereco);
+		f3.setCpf("379.388.824-02");
+		
+		funcionarioRepository.saveAll(Arrays.asList(f1, f2, f3));
 	}
 }

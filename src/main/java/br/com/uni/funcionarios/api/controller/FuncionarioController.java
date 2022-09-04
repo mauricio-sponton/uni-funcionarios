@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.uni.funcionarios.api.assembler.FuncionarioModelAssembler;
-import br.com.uni.funcionarios.api.disassembler.FuncionarioInputDisassembler;
-import br.com.uni.funcionarios.api.model.input.FuncionarioInput;
-import br.com.uni.funcionarios.api.model.output.FuncionarioModel;
-import br.com.uni.funcionarios.api.model.output.FuncionarioResumoModel;
+import br.com.uni.funcionarios.api.assembler.FuncionarioDTOAssembler;
+import br.com.uni.funcionarios.api.disassembler.FuncionarioInputDTODisassembler;
+import br.com.uni.funcionarios.api.dto.input.FuncionarioInputDTO;
+import br.com.uni.funcionarios.api.dto.output.FuncionarioDTO;
+import br.com.uni.funcionarios.api.dto.output.FuncionarioResumoDTO;
+import br.com.uni.funcionarios.api.dto.output.NovoSalarioDTO;
 import br.com.uni.funcionarios.domain.model.Funcionario;
 import br.com.uni.funcionarios.domain.service.FuncionarioService;
 
@@ -32,48 +33,53 @@ public class FuncionarioController {
 	private FuncionarioService funcionarioService;
 
 	@Autowired
-	private FuncionarioModelAssembler funcionarioModelAssembler;
+	private FuncionarioDTOAssembler funcionarioDTOAssembler;
 
 	@Autowired
-	private FuncionarioInputDisassembler funcionarioInputDisassembler;
+	private FuncionarioInputDTODisassembler funcionarioInputDTODisassembler;
 
 	@GetMapping
-	public List<FuncionarioResumoModel> listar() {
+	public List<FuncionarioResumoDTO> listar() {
 		List<Funcionario> todosFuncionarios = funcionarioService.listar();
-		return funcionarioModelAssembler.toCollectionModel(todosFuncionarios);
+		return funcionarioDTOAssembler.toCollectionModel(todosFuncionarios);
 	}
 
 	@GetMapping("/{funcionarioId}")
-	public FuncionarioModel buscar(@PathVariable Long funcionarioId) {
+	public FuncionarioDTO buscar(@PathVariable Long funcionarioId) {
 		Funcionario funcionario = funcionarioService.buscarOuFalhar(funcionarioId);
-		return funcionarioModelAssembler.toFuncionarioModel(funcionario);
+		return funcionarioDTOAssembler.toFuncionarioModel(funcionario);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public FuncionarioModel adicionar(@RequestBody @Valid FuncionarioInput funcionarioInput) {
-		Funcionario funcionario = funcionarioInputDisassembler.toDomainObject(funcionarioInput);
+	public FuncionarioDTO adicionar(@RequestBody @Valid FuncionarioInputDTO funcionarioInputDTO) {
+		Funcionario funcionario = funcionarioInputDTODisassembler.toDomainObject(funcionarioInputDTO);
 
 		funcionario = funcionarioService.salvar(funcionario);
 
-		return funcionarioModelAssembler.toFuncionarioModel(funcionario);
+		return funcionarioDTOAssembler.toFuncionarioModel(funcionario);
 	}
 
 	@PutMapping("/{funcionarioId}")
-	public FuncionarioModel atualizar(@PathVariable Long funcionarioId,
-			@RequestBody @Valid FuncionarioInput funcionarioInput) {
+	public FuncionarioDTO atualizar(@PathVariable Long funcionarioId,
+			@RequestBody @Valid FuncionarioInputDTO funcionarioInputDTO) {
 		Funcionario funcionarioAtual = funcionarioService.buscarOuFalhar(funcionarioId);
 
-		funcionarioInputDisassembler.copyToDomainObject(funcionarioInput, funcionarioAtual);
+		funcionarioInputDTODisassembler.copyToDomainObject(funcionarioInputDTO, funcionarioAtual);
 
 		funcionarioAtual = funcionarioService.salvar(funcionarioAtual);
 
-		return funcionarioModelAssembler.toFuncionarioModel(funcionarioAtual);
+		return funcionarioDTOAssembler.toFuncionarioModel(funcionarioAtual);
 	}
 
 	@DeleteMapping("/{funcionarioId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long funcionarioId) {
 		funcionarioService.excluir(funcionarioId);
+	}
+	
+	@PutMapping("/novo-salario/{funcionarioCpf}")
+	public NovoSalarioDTO novoSalario(@PathVariable String funcionarioCpf) {
+		return funcionarioService.calcularNovoSalario(funcionarioCpf);
 	}
 }

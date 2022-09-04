@@ -1,8 +1,8 @@
-package br.com.uni.funcionarios.api.model.input;
+package br.com.uni.funcionarios.api.dto.input;
 
 import javax.validation.constraints.NotBlank;
 
-public class EnderecoInput {
+public class EnderecoInputDTO {
 
 	@NotBlank
 	private String cep;

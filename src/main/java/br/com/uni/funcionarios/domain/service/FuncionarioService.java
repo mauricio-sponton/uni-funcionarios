@@ -1,13 +1,17 @@
 package br.com.uni.funcionarios.domain.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.uni.funcionarios.api.dto.output.NovoSalarioDTO;
 import br.com.uni.funcionarios.domain.exception.FuncionarioNaoEncontradoException;
 import br.com.uni.funcionarios.domain.exception.NegocioException;
 import br.com.uni.funcionarios.domain.model.Funcionario;
@@ -25,8 +29,15 @@ public class FuncionarioService {
 
 	@Transactional
 	public Funcionario salvar(Funcionario funcionario) {
-		validarCpf(funcionario);
-		return funcionarioRepository.save(funcionario);
+		try {
+
+			validarCpf(funcionario);
+			return funcionarioRepository.save(funcionario);
+
+		} catch (ConstraintViolationException e) {
+			throw new NegocioException(String.format("O CPF de número: %s é inválido, verifique o número novamente!",
+					funcionario.getCpf()));
+		}
 	}
 
 	public Funcionario buscarOuFalhar(Long funcionarioId) {
@@ -45,7 +56,42 @@ public class FuncionarioService {
 			throw new FuncionarioNaoEncontradoException(funcionarioId);
 		}
 	}
-	
+
+	@Transactional
+	public NovoSalarioDTO calcularNovoSalario(String funcionarioCpf) {
+		Optional<Funcionario> funcionario = funcionarioRepository.findByCpf(funcionarioCpf);
+
+		if (!funcionario.isPresent()) {
+			throw new NegocioException(
+					String.format("Não existe um funcionário cadastrado com o CPF: %s", funcionarioCpf));
+		}
+
+		BigDecimal salario = funcionario.get().getSalario();
+		Double valor = funcionario.get().definirValorPercentual();
+		BigDecimal reajuste = calcularReajuste(funcionario, valor);
+		String percentual = calcularPercentual(funcionario, valor);
+
+		salario = funcionario.get().calcularNovoSalario(reajuste);
+
+		NovoSalarioDTO dto = new NovoSalarioDTO();
+		dto.setCpf(funcionario.get().getCpf());
+		dto.setNovoSalario(salario);
+		dto.setPercentual(percentual);
+		dto.setReajuste(reajuste);
+		
+		funcionario.get().setSalario(salario);
+
+		return dto;
+	}
+
+	private BigDecimal calcularReajuste(Optional<Funcionario> funcionario, Double valor) {
+		return funcionario.get().calcularReajuste(valor);
+	}
+
+	private String calcularPercentual(Optional<Funcionario> funcionario, Double valor) {
+		return funcionario.get().calcularPercentual(valor);
+	}
+
 	private void validarCpf(Funcionario funcionario) {
 
 		Optional<Funcionario> funcionarioExistente = funcionarioRepository.findByCpf(funcionario.getCpf());
